@@ -34,7 +34,8 @@ open class ScrollingStackView: UIScrollView {
 
         return super.touchesShouldCancel(in: view)
     }
-
+    
+    @available(iOS 11.0, *)
     open override func safeAreaInsetsDidChange() {
         super.safeAreaInsetsDidChange()
         topSafeAreaConstraint?.constant = safeAreaInsets.top
@@ -50,25 +51,44 @@ open class ScrollingStackView: UIScrollView {
     public init() {
         super.init(frame: .zero)
 
-        contentInsetAdjustmentBehavior = .never
+        if #available(iOS 11.0, *) {
+            contentInsetAdjustmentBehavior = .never
+        } else {
+            
+        }
 
         addSubview(contentView)
         contentView.translatesAutoresizingMaskIntoConstraints = false
         contentView.clipsToBounds = false
 
-        topSafeAreaConstraint = contentView.topAnchor.constraint(equalTo: topAnchor, constant: safeAreaInsets.top)
+        let margins: UIEdgeInsets
+        if #available(iOS 11.0, *) {
+            margins = safeAreaInsets
+        } else {
+            margins = layoutMargins
+        }
+        topSafeAreaConstraint = contentView.topAnchor.constraint(equalTo: topAnchor, constant: margins.top)
         topSafeAreaConstraint?.isActive = true
 
-        bottomSafeAreaConstraint = contentView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: safeAreaInsets.bottom)
+        bottomSafeAreaConstraint = contentView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: margins.bottom)
         bottomSafeAreaConstraint?.isActive = true
 
-        NSLayoutConstraint.activate([
-            contentView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: trailingAnchor),
+        if #available(iOS 11.0, *) {
+            NSLayoutConstraint.activate([
+                contentView.leadingAnchor.constraint(equalTo: leadingAnchor),
+                contentView.trailingAnchor.constraint(equalTo: trailingAnchor),
 
-            contentView.heightAnchor.constraint(greaterThanOrEqualTo: safeAreaLayoutGuide.heightAnchor),
-            contentView.widthAnchor.constraint(equalTo: frameLayoutGuide.widthAnchor),
-        ])
+                contentView.heightAnchor.constraint(greaterThanOrEqualTo: safeAreaLayoutGuide.heightAnchor),
+                contentView.widthAnchor.constraint(equalTo: frameLayoutGuide.widthAnchor),
+            ])
+        } else {
+            NSLayoutConstraint.activate([
+                contentView.leadingAnchor.constraint(equalTo: leadingAnchor),
+                contentView.trailingAnchor.constraint(equalTo: trailingAnchor),
+                contentView.heightAnchor.constraint(greaterThanOrEqualTo: heightAnchor),
+                contentView.widthAnchor.constraint(equalTo: widthAnchor)
+            ])
+        }
 
         contentView.addSubview(stackView)
         stackView.translatesAutoresizingMaskIntoConstraints = false

@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
   s.author           = { 'jclark@rightpoint.com' => 'jclark@rightpoint.com' }
   s.source           = { :git => 'https://github.com/Rightpoint/Stackable.git', :tag => s.version.to_s }
 
-  s.ios.deployment_target = '12.0'
+  s.ios.deployment_target = '10.0'
   s.swift_versions = ['5.0']
   
   s.source_files = 'Stackable/**/*'
